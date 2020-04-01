@@ -1,0 +1,14 @@
+CERTBOT_DOMAIN="uvoo.io"
+GODADDY_API_KEY="YOURKEY"
+GODADDY_API_SECRET="YOURSECRET"
+GODADDY_URL="https://api.godaddy.com/"
+
+DNS_REC_TYPE=TXT
+DNS_REC_NAME="_acme-challenge"
+DNS_REC_DATA="${CERTBOT_VALIDATION}"
+DNS_REC_TTL="600"
+
+curl -X PUT "${GODADDY_URL}/v1/domains/${CERTBOT_DOMAIN}/records/${DNS_REC_TYPE}" \
+-H  "accept: application/json" -H  "Content-Type: application/json" \
+-H  "Authorization: sso-key ${GODADDY_API_KEY}:${GODADDY_API_SECRET}" \
+-d "[{ \"data\": \"${DNS_REC_DATA}\", \"name\": \"${DNS_REC_NAME}\", \"ttl\": ${DNS_REC_TTL} }]"
