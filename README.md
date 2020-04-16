@@ -1,6 +1,6 @@
 # Letsencrypt Automation for Godday
 
-Update authenticate and cleanup scripts with Godaddy auth keys
+Update authenticate and cleanup scripts with Godaddy auth keys and your domain (replace uvoo.io in scripts)
 
 ./get-manual-cert.sh
 
