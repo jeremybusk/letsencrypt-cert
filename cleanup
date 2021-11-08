@@ -1,15 +1,12 @@
-# GoDaddy API Credentials
-GODADDY_API_KEY="YOURKEY"
-GODADDY_API_SECRET="YOURSECRET"
-GODADDY_URL="https://api.godaddy.com/"
-
+#!/usr/bin/env bash
+set -eux
+DOMAIN=$(echo "$CERT_CN" | awk -F. '{print $(NF-1)"."$(NF-0)}')
 DNS_REC_TYPE=TXT
 DNS_REC_NAME="previous_acme-challenge"
 DNS_REC_DATA="${CERTBOT_VALIDATION}"
 DNS_REC_TTL="600"
 
-# WARNING!!! STILL NEEDS SOME WORK
-curl -X PUT "${GODADDY_URL}/v1/domains/${CERTBOT_DOMAIN}/records/${DNS_REC_TYPE}" \
+curl -X PUT "${GODADDY_API_URL}/v1/domains/${DOMAIN}/records/${DNS_REC_TYPE}" \
 -H  "accept: application/json" -H  "Content-Type: application/json" -H  \
 "Authorization: sso-key ${GODADDY_API_KEY}:${GODADDY_API_SECRET}" \
 -d "[{ \"data\": \"${DNS_REC_DATA}\", \"name\": \"${DNS_REC_NAME}\", \"ttl\": ${DNS_REC_TTL} }]"
