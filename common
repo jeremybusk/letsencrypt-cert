@@ -1,0 +1,40 @@
+#!/bin/bash
+# set -eu
+
+# If you ever have add to alias command
+# alias ansible=/home/jebusk/.local/bin/ansible
+
+run_cmd(){
+  host=$1
+  cmd=$2
+  conn=${3:-linux}
+  port=${4:-22}
+  if [[ $conn == "winrm" ]]; then
+    ansible all --inventory $host, --module-name=win_shell --args="$cmd" \
+     -e ansible_password=$ANSIBLE_PASSWORD -e ansible_user=$ANSIBLE_USER \
+     -e ansible_winrm_transport=ntlm -e ansible_connection=winrm \
+     -e ansible_port=$port
+  elif [[ $conn == "ssh" ]]; then
+    ansible all --inventory $host, --module-name=shell --args="$cmd" \
+      -e ansible_password=$ANSIBLE_PASSWORD
+      -e ansible_user=$ANSIBLE_USER \
+      -e ansible_become_password=$ANSIBLE_PASSWORD --become \
+      -e ansible_port=$port
+  else
+    echo "Connection type $conn not supported."
+  fi
+}
+
+get_acme_dns_challenge_vars(){
+  DOMAIN=$(echo "$CERT_CN" | awk -F. '{print $(NF-1)"."$(NF-0)}')
+  HOST=$(echo "$CERT_CN" | rev | cut -d '.' -f3- | rev)
+
+  if [ $(echo "$CERT_CN" | grep "*") ]; then
+    DNS_REC_NAME="_acme-challenge"
+  else
+    DNS_REC_NAME="_acme-challenge.$HOST"
+  fi
+  DNS_REC_TYPE=TXT
+  DNS_REC_DATA="${CERTBOT_VALIDATION}"
+  DNS_REC_TTL="600"
+}
