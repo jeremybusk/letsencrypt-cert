@@ -1,12 +1,28 @@
 #!/usr/bin/env bash
-set -eux
-DOMAIN=$(echo "$CERT_CN" | awk -F. '{print $(NF-1)"."$(NF-0)}')
-DNS_REC_TYPE=TXT
-DNS_REC_NAME="previous_acme-challenge"
-DNS_REC_DATA="${CERTBOT_VALIDATION}"
-DNS_REC_TTL="600"
+set -eu
+shopt -s expand_aliases
+source ./common
 
-curl -X PUT "${GODADDY_API_URL}/v1/domains/${DOMAIN}/records/${DNS_REC_TYPE}" \
--H  "accept: application/json" -H  "Content-Type: application/json" -H  \
-"Authorization: sso-key ${GODADDY_API_KEY}:${GODADDY_API_SECRET}" \
--d "[{ \"data\": \"${DNS_REC_DATA}\", \"name\": \"${DNS_REC_NAME}\", \"ttl\": ${DNS_REC_TTL} }]"
+
+godaddy(){
+  curl -X PUT "${GODADDY_API_URL}/v1/domains/${DOMAIN}/records/${DNS_REC_TYPE}" \
+  -H  "accept: application/json" -H  "Content-Type: application/json" -H  \
+  "Authorization: sso-key ${GODADDY_API_KEY}:${GODADDY_API_SECRET}" \
+  -d "[{ \"data\": \"${DNS_REC_DATA}\", \"name\": \"${DNS_REC_NAME}\", \"ttl\": ${DNS_REC_TTL} }]"
+}
+
+
+windows_dns(){
+  echo "Cleanup"
+  cmd="Remove-DnsServerResourceRecord -ZoneName mktp.io -RRType Txt -Name ${DNS_REC_NAME} -force"
+  run_cmd wjp1-dmzdns.ehdmz.com "$cmd" winrm 5985
+}
+
+
+main(){
+  get_acme_dns_challenge_vars
+  windows_dns
+}
+
+
+main
