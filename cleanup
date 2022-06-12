@@ -14,8 +14,8 @@ godaddy(){
 
 windows_dns(){
   echo "Cleanup"
-  cmd="Remove-DnsServerResourceRecord -ZoneName mktp.io -RRType Txt -Name ${DNS_REC_NAME} -force"
-  run_cmd wjp1-dmzdns.ehdmz.com "$cmd" winrm 5985
+  cmd="Remove-DnsServerResourceRecord -ZoneName $DOMAIN -RRType Txt -Name ${DNS_REC_NAME} -force"
+  run_cmd $WINDOWS_DNS_HOST "$cmd" winrm 5986
 }
 
 
