@@ -1,19 +1,28 @@
-#!/usr/bin/env bash
-set -eux
-DOMAIN=$(echo "$CERT_CN" | awk -F. '{print $(NF-1)"."$(NF-0)}')
-HOST=$(echo "$CERT_CN" | rev | cut -d '.' -f3- | rev)
+#!/bin/bash
+set -eu
+shopt -s expand_aliases
+source ./common
 
-if [ $(echo "$CERT_CN" | grep "*") ]; then
-  DNS_REC_NAME="_acme-challenge"
-else
-  DNS_REC_NAME="_acme-challenge.$HOST"
-fi
-DNS_REC_TYPE=TXT
-DNS_REC_DATA="${CERTBOT_VALIDATION}"
-DNS_REC_TTL="600"
 
-curl -X PUT "${GODADDY_API_URL}/v1/domains/${DOMAIN}/records/${DNS_REC_TYPE}" \
--H  "accept: application/json" -H  "Content-Type: application/json" \
--H  "Authorization: sso-key ${GODADDY_API_KEY}:${GODADDY_API_SECRET}" \
--d "[{ \"data\": \"${DNS_REC_DATA}\", \"name\": \"${DNS_REC_NAME}\", \"ttl\": ${DNS_REC_TTL} }]"
-echo "sleep 30" && sleep 30
+godaddy_dns(){
+  curl -X PUT "${GODADDY_API_URL}/v1/domains/${DOMAIN}/records/${DNS_REC_TYPE}" \
+    -H  "accept: application/json" -H  "Content-Type: application/json" \
+    -H  "Authorization: sso-key ${GODADDY_API_KEY}:${GODADDY_API_SECRET}" \
+    -d "[{ \"data\": \"${DNS_REC_DATA}\", \"name\": \"${DNS_REC_NAME}\", \"ttl\": ${DNS_REC_TTL} }]"
+}
+
+
+windows_dns(){
+  cmd="Add-DnsServerResourceRecord -ZoneName mktp.io -Name  "${DNS_REC_NAME}" -Txt -DescriptiveText \"${DNS_REC_DATA}\""
+  run_cmd $WINDOWS_DNS_HOST "$cmd" winrm 5986
+}
+
+
+main(){
+  get_acme_dns_challenge_vars
+  windows_dns
+  echo "sleep 30" && sleep 30
+}
+
+
+main
