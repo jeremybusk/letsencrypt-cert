@@ -13,7 +13,7 @@ godaddy_dns(){
 
 
 windows_dns(){
-  cmd="Add-DnsServerResourceRecord -ZoneName mktp.io -Name  "${DNS_REC_NAME}" -Txt -DescriptiveText \"${DNS_REC_DATA}\""
+  cmd="Add-DnsServerResourceRecord -ZoneName $DOMAIN -Name  "${DNS_REC_NAME}" -Txt -DescriptiveText \"${DNS_REC_DATA}\""
   run_cmd $WINDOWS_DNS_HOST "$cmd" winrm 5986
 }
 
