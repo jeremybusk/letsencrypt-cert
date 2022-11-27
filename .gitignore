@@ -1,0 +1,7 @@
+.env.secrets
+work/
+config/
+logs/
+
+trash/
+*.out

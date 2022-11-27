@@ -19,6 +19,9 @@ while true; do
   # r=$(dig +short txt ${DNS_REC_NAME}.${DOMAIN} @8.8.8.8)
   r=$(dig +short txt ${DNS_REC_NAME}.${DOMAIN})
   [ -z "$r" ] || break
+  # check if wildcard i.e. *.example.org
+  r=$(dig +short txt _acme-challenge.${DOMAIN})
+  [ -z "$r" ] || break
 done
 }
 
