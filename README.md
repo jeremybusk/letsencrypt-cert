@@ -11,6 +11,9 @@ nano .env.secrets
 
 3. Update .env variables if needed for ote
 
+5. Install certbot if you haven't already 
+  - https://eff-certbot.readthedocs.io/en/stable/install.html
+
 4. Run but avoid using wildcards
 
 ```
