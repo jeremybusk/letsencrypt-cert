@@ -1,27 +1,29 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -eu
 shopt -s expand_aliases
 source ./common
 
+CN_DOMAIN=$1
 
-godaddy(){
-  curl -X PUT "${GODADDY_API_URL}/v1/domains/${DOMAIN}/records/${DNS_REC_TYPE}" \
-  -H  "accept: application/json" -H  "Content-Type: application/json" -H  \
-  "Authorization: sso-key ${GODADDY_API_KEY}:${GODADDY_API_SECRET}" \
-  -d "[{ \"data\": \"${DNS_REC_DATA}\", \"name\": \"${DNS_REC_NAME}\", \"ttl\": ${DNS_REC_TTL} }]"
+
+godaddy_dns_clean_record(){
+  curl -s -X PUT \
+    "${GODADDY_API_URL}/v1/domains/${DOMAIN}/records/${DNS_REC_TYPE}/${DNS_REC_NAME}" \
+    -H  "accept: application/json" -H  "Content-Type: application/json" \
+    -H  "Authorization: sso-key ${GODADDY_API_KEY}:${GODADDY_API_SECRET}" \
+    -d "[{ \"data\": \"clean\", \"name\": \"${DNS_REC_NAME}\", \"ttl\": ${DNS_REC_TTL} }]"
 }
 
 
 windows_dns(){
-  echo "Cleanup"
   cmd="Remove-DnsServerResourceRecord -ZoneName $DOMAIN -RRType Txt -Name ${DNS_REC_NAME} -force"
   run_cmd $WINDOWS_DNS_HOST "$cmd" winrm 5986
 }
 
 
 main(){
-  get_acme_dns_challenge_vars
-  windows_dns
+  set_acme_dns_challenge_vars $CN_DOMAIN
+  godaddy_dns_clean_record
 }
 
 

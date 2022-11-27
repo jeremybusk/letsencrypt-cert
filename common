@@ -1,10 +1,28 @@
 #!/bin/bash
-# set -eu
+set -eu
 
-# If you ever have add to alias command
-# alias ansible=/home/jebusk/.local/bin/ansible
+
+set_acme_dns_challenge_vars(){
+  CERT_CN=$1
+  DOMAIN=$(echo "$CERT_CN" | awk -F. '{print $(NF-1)"."$(NF-0)}')
+  HOST=$(echo "$CERT_CN" | rev | cut -d '.' -f3- | rev)
+
+  if [ $(echo "$CERT_CN" | grep "*") ]; then
+    DNS_REC_NAME="_acme-challenge"
+  else
+    DNS_REC_NAME="_acme-challenge.$HOST"
+  fi
+  DNS_REC_TYPE=TXT
+  DNS_REC_DATA="${CERTBOT_VALIDATION}"
+  DNS_REC_TTL="600"
+}
+
 
 run_cmd(){
+  set +u 
+  # For windows_dns
+  # If you ever have add to alias command
+  # alias ansible=/home/jebusk/.local/bin/ansible
   host=$1
   cmd=$2
   conn=${3:-linux}
@@ -25,16 +43,3 @@ run_cmd(){
   fi
 }
 
-get_acme_dns_challenge_vars(){
-  DOMAIN=$(echo "$CERT_CN" | awk -F. '{print $(NF-1)"."$(NF-0)}')
-  HOST=$(echo "$CERT_CN" | rev | cut -d '.' -f3- | rev)
-
-  if [ $(echo "$CERT_CN" | grep "*") ]; then
-    DNS_REC_NAME="_acme-challenge"
-  else
-    DNS_REC_NAME="_acme-challenge.$HOST"
-  fi
-  DNS_REC_TYPE=TXT
-  DNS_REC_DATA="${CERTBOT_VALIDATION}"
-  DNS_REC_TTL="600"
-}

@@ -1,0 +1,24 @@
+#!/bin/bash
+set -eu
+
+if [[ "$#" != 2 ]]; then
+  echo "Usage: $0 <myhost.example.com> <email>"
+  echo "Example: $0 myhost.dev.example.com dontusethisemailever@gmail.com>"
+  exit
+fi
+cert_cn="$1"
+email="$2"
+# CERT_CN="$1"
+# export CERTBOT_VALIDATION="y2hyP9I42Bq6eJUOQls9bbZRY0Fe3idS5mtluWID65k"
+# ./cleanup $CERT_CN
+# exit
+
+# certbot certonly --agree-tos --no-bootstrap --manual \
+/snap/bin/certbot certonly --agree-tos --no-bootstrap --manual \
+  -m $email \
+  --manual-public-ip-logging-ok --manual-auth-hook "./authenticate $cert_cn" \
+  --manual-cleanup-hook "./cleanup $cert_cn" --preferred-challenges dns -d "${cert_cn}" \
+  --logs-dir ./logs --work-dir  ./work --config-dir ./config
+  # --logs-dir ./logs --work-dir  ./work --config-dir ./config --config cli.ini
+
+echo "Get cert by domain in folder ~/config/live/"
