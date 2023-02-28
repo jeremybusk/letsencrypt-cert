@@ -14,6 +14,12 @@ godaddy_dns_clean_record(){
     -d "[{ \"data\": \"clean\", \"name\": \"${DNS_REC_NAME}\", \"ttl\": ${DNS_REC_TTL} }]"
 }
 
+godaddy_dns_delete_record(){
+  curl -s -X DELETE \
+    "${GODADDY_API_URL}/v1/domains/${DOMAIN}/records/${DNS_REC_TYPE}/${DNS_REC_NAME}" \
+    -H  "Authorization: sso-key ${GODADDY_API_KEY}:${GODADDY_API_SECRET}"
+}
+
 
 windows_dns(){
   cmd="Remove-DnsServerResourceRecord -ZoneName $DOMAIN -RRType Txt -Name ${DNS_REC_NAME} -force"
@@ -23,7 +29,8 @@ windows_dns(){
 
 main(){
   set_acme_dns_challenge_vars $CN_DOMAIN
-  godaddy_dns_clean_record
+  # godaddy_dns_clean_record
+  godaddy_dns_delete_record
 }
 
 
