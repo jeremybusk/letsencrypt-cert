@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
-.env
-.env.secrets
+# . .env
+# . .env.secrets
 
 if [[ "$#" != 2 ]]; then
   echo "Usage: $0 <myhost.example.com> <email>"
@@ -17,4 +17,4 @@ certbot certonly --agree-tos --no-bootstrap --manual \
   --manual-cleanup-hook "./cleanup $cert_cn" --preferred-challenges dns -d "${cert_cn}" \
   --logs-dir ./logs --work-dir  ./work --config-dir ./config
 
-echo "Get cert by domain in folder ~/config/live/"
+
