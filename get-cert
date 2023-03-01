@@ -10,7 +10,9 @@ if [[ "$#" != 2 ]]; then
 fi
 cert_cn="$1"
 email="$2"
+# mkdir -p logs work config
 
+# certbot certonly --agree-tos --no-eff-email --no-bootstrap --manual \
 certbot certonly --agree-tos --no-bootstrap --manual \
   -m $email \
   --manual-public-ip-logging-ok --manual-auth-hook "./authenticate $cert_cn" \

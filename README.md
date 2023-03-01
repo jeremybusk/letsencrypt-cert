@@ -1,5 +1,10 @@
 # Letsencrypt Automation for Godday
 
+0. Install kdig
+```
+sudo apt install knot-dnsutils
+```
+
 1. Create GoDaddy API key/secret here
   - https://developer.godaddy.com
 
@@ -57,3 +62,8 @@ dig -t TXT _acme-challenge.example.com @8.8.8.8
   -m email
 ```
  
+
+curl --http2 -H "accept: application/dns-json" "https://1.1.1.1/dns-query?name=cloudflare.com" --next --http2 -H "accept: application/dns-json" "https://1.1.1.1/dns-query?name=example.com"
+
+# Explore Other Options
+- https://github.com/miigotu/certbot-dns-godaddy
