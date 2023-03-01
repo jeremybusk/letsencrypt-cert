@@ -13,10 +13,14 @@ set_acme_dns_challenge_vars(){
     DNS_REC_NAME="_acme-challenge.$HOST"
   fi
   DNS_REC_TYPE=TXT
+  set +u
   DNS_REC_DATA="${CERTBOT_VALIDATION}"
+  set -u 
   DNS_REC_TTL="600"
-}
 
+# echo CERT_CN=$CERT_CN DOMAIN=$DOMAIN HOST=$HOST
+# echo DNS_REC_TYPE=$DNS_REC_TYPE DNS_REC_DATA=$DNS_REC_DATA DNS_REC_TTL=$DNS_REC_TTL
+}
 
 run_cmd(){
   set +u 

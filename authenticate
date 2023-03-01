@@ -15,13 +15,24 @@ godaddy_dns_put_record(){
 
 test_godaddy_record_exists(){
 while true; do
-  sleep 3
+  echo DOMAIN=$DOMAIN
+  sleep 5
   # r=$(dig +short txt ${DNS_REC_NAME}.${DOMAIN} @8.8.8.8)
-  r=$(dig +short txt ${DNS_REC_NAME}.${DOMAIN})
-  [ -z "$r" ] || break
+  # r=$(dig +short txt "${DNS_REC_NAME}.${DOMAIN}" @8.8.8.8)
+  # r=$(dig +short txt "${DNS_REC_NAME}.${DOMAIN}")
+  r=$(kdig +short @dns.google txt "${DNS_REC_NAME}.${DOMAIN}")
+  if [ -z "$r" ]; then
+    sleep 10
+    break
+  fi
   # check if wildcard i.e. *.example.org
-  r=$(dig +short txt _acme-challenge.${DOMAIN})
-  [ -z "$r" ] || break
+  # r=$(dig +short txt "_acme-challenge.${DOMAIN}" @8.8.8.8)
+  # r=$(dig +short txt "_acme-challenge.${DOMAIN}")
+  r=$(kdig +short @dns.google txt "_acme-challenge.${DOMAIN}")
+  if [ -z "$r" ]; then
+    sleep 10
+    break
+  fi
 done
 }
 
@@ -35,6 +46,7 @@ windows_dns_add_record(){
 main(){
   set_acme_dns_challenge_vars $CN_DOMAIN
   godaddy_dns_put_record
+  # sleep 50
   test_godaddy_record_exists
 }
 
