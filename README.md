@@ -22,6 +22,7 @@ nano .env.secrets
 4. Run but avoid using wildcards
 
 ```
+. .env.secrets
 ./get-cert "host1.example.org" myemail@gmail.com
 ./get-cert "*.example.org" myemail@gmail.com
 ```
